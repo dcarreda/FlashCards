@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.StringTokenizer;
 import java.io.*;
 
 import javax.swing.*;
@@ -19,6 +20,8 @@ public class FlashCardPlayer {
 
 	private JTextArea display;
 	private JTextArea answer;
+	
+	private boolean isShowAnswer; 
 	private ArrayList<FlashCard> cardlist;
 	private Iterator cardIterator;
 	private FlashCard currentCard;
@@ -78,6 +81,18 @@ public class FlashCardPlayer {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			
+			if(isShowAnswer) {
+				display.setText(currentCard.getAnswer());
+				answer.setText("next card");
+				isShowAnswer=false;
+			}else {
+				if(cardIterator.hasNext()) {
+					showNextCard();
+				}else { //No more cards
+					display.setText("that was the last card.");
+					answer.setEnabled(false);
+				}
+			}
 		}
 
 	}
@@ -94,7 +109,48 @@ public class FlashCardPlayer {
 	}
 
 	public void loadFile(File selectedFile) {
-		// TODO Auto-generated method stub
+
+		cardlist = new ArrayList<FlashCard>();
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(selectedFile)); //File Reader returns a Reader
+			String line = null;
+			
+			while((line=reader.readLine())!= null) {
+				makeCard(line);
+			
+			}
+			reader.close();
+			
+		} catch (Exception e) {
+			System.out.println("problems reading the file");
+			e.getStackTrace();
+		}
+		
+		cardIterator = cardlist.iterator();
+		showNextCard();
+	}
+
+
+	private void showNextCard() {
+		currentCard = (FlashCard) cardIterator.next();
+		
+		display.setText(currentCard.getQuestion());
+		showButton.setText("Show Anwser");
+		isShowAnswer=true;
+	}
+
+
+	public void makeCard(String lineToParse) {
+		//String[] result = lineToParse.split("/");
+		StringTokenizer result = new StringTokenizer(lineToParse, "/");
+		if (result.hasMoreTokens()) {
+			
+			FlashCard card = new FlashCard(result.nextToken(), result.nextToken());
+			cardlist.add(card);
+			System.out.println("Made a Card" + card.getQuestion());
+			
+			
+		}
 		
 	}
 
