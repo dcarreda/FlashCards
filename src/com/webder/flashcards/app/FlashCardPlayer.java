@@ -19,32 +19,30 @@ import com.webder.flashcards.app.FlashCardbuilder.saveMenuItemListener;
 public class FlashCardPlayer {
 
 	private JTextArea display;
-	private JTextArea answer;
 	
-	private boolean isShowAnswer; 
 	private ArrayList<FlashCard> cardlist;
 	private Iterator cardIterator;
 	private FlashCard currentCard;
-	private int currentCardIndex;
 	private JFrame frame;
-	private JButton showButton;
-	
+	private JButton showAnwser;
+	private boolean isShowAnswer; 
+
 	public FlashCardPlayer() {
 		//Build UI
 		
 		frame = new JFrame("FlashCard Player");
 		JPanel myPanel = new JPanel();
 		Font myFont = new Font("Helvetica Neue", Font.BOLD, 21);
-		
-		display = new JTextArea(10,20);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		display = new JTextArea(10,15);
 		display.setFont(myFont);
 		
 		JScrollPane jScrollPane = new JScrollPane(display);
 		jScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		jScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-		showButton = new JButton("Show Answer");
-		showButton.addActionListener(new ShowCardListener());
+		showAnwser = new JButton("Show Answer");
 		
 		//Menu Bar
 		JMenuBar menuBar = new JMenuBar();
@@ -56,16 +54,18 @@ public class FlashCardPlayer {
 		menuBar.add(jMenu);
 		
 		myPanel.add(jScrollPane);
-		myPanel.add(showButton);
-		frame.setJMenuBar(menuBar);
-		frame.getContentPane().add(BorderLayout.CENTER, myPanel);
-		frame.setSize(640, 500);
+		myPanel.add(showAnwser);
+		showAnwser.addActionListener(new NextCardListener());
+
 		
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setJMenuBar(menuBar);
+		frame.setSize(640, 500);
+		frame.getContentPane().add(BorderLayout.CENTER, myPanel);
+		
 		frame.setVisible(true);
 	}
 	
-	
+// Main Function	
 	public static void main(String[] args) {
 	SwingUtilities.invokeLater(new Runnable() {
 				
@@ -76,21 +76,22 @@ public class FlashCardPlayer {
 			});
 	}
 	
-	public class ShowCardListener implements ActionListener {
+	// Action Listener for the button
+	public class NextCardListener implements ActionListener {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			
 			if(isShowAnswer) {
 				display.setText(currentCard.getAnswer());
-				answer.setText("next card");
+				showAnwser.setText("next card");
 				isShowAnswer=false;
 			}else {
 				if(cardIterator.hasNext()) {
 					showNextCard();
 				}else { //No more cards
 					display.setText("that was the last card.");
-					answer.setEnabled(false);
+					showAnwser.setEnabled(false);
 				}
 			}
 		}
@@ -101,6 +102,7 @@ public class FlashCardPlayer {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			
 			JFileChooser file = new JFileChooser();
 			file.showOpenDialog(frame);
 			loadFile(file.getSelectedFile());
@@ -135,7 +137,7 @@ public class FlashCardPlayer {
 		currentCard = (FlashCard) cardIterator.next();
 		
 		display.setText(currentCard.getQuestion());
-		showButton.setText("Show Anwser");
+		showAnwser.setText("Show Anwser");
 		isShowAnswer=true;
 	}
 
