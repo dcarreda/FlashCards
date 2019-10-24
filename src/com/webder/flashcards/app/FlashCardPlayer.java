@@ -43,6 +43,7 @@ public class FlashCardPlayer {
 		jScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
 		showAnwser = new JButton("Show Answer");
+		showAnwser.setEnabled(false);
 		
 		//Menu Bar
 		JMenuBar menuBar = new JMenuBar();
@@ -129,6 +130,7 @@ public class FlashCardPlayer {
 		}
 		
 		cardIterator = cardlist.iterator();
+		showAnwser.setEnabled(true);
 		showNextCard();
 	}
 
